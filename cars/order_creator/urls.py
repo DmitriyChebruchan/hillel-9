@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.urls import path
 
-from .views import car_list, order_list, client_list, success, log_in, personal_cabinet
+from .views import car_list, order_list, client_list, success, log_in, personal_cabinet, make_order
 
 urlpatterns = [
     path("order_list", order_list, name="order_list"),

@@ -1,6 +1,7 @@
+from django.shortcuts import get_object_or_404
 from django.shortcuts import render, redirect
 
-from .forms import UserLogInForm
+from .forms import UserLogInForm, OrderForm, CarAssignmentForm
 from .models import Client, Car, Order
 
 
@@ -40,4 +41,9 @@ def personal_cabinet(request, pk):
 
 
 def make_order(request, pk):
-    return
+    client = get_object_or_404(Client, pk=pk)
+    order_form = OrderForm()
+    car_assignment_form = CarAssignmentForm()
+    return render(request, 'make_order.html',
+                  {'order_form': order_form,
+                   'car_assignment_form': car_assignment_form})

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Create Order{% endblock %}
+
+{% block content %}
+<h2>Create Order</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ order_form.as_p }}
+    <h3>Choose Cars:</h3>
+    {% for car in car_assignment_form.cars %}
+    <div style="display: flex;">
+        <input id="car_{{ car.id }}" name="cars" type="checkbox" value="{{ car.id }}">
+        <label for="car_{{ car.id }}">{{ car }}</label>
+    </div>
+    <br>
+    {% endfor %}
+    <input type="submit" value="Submit">
+</form>
+{% endblock%}

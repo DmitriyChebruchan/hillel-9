@@ -29,6 +29,7 @@ class Car(models.Model):
     year = models.IntegerField()
     blocked_by_order = models.ForeignKey("Order", on_delete=models.SET_NULL, null=True, related_name="reserved_cars")
     owner = models.ForeignKey(Client, on_delete=models.SET_NULL, null=True, related_name="cars")
+    order = models.ForeignKey("Order", null=True, on_delete=models.SET_NULL)
 
     def block(self, order):
         self.blocked_by_order = order
