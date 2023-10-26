@@ -16,12 +16,14 @@ Including another URLconf
 """
 from django.urls import path
 
-from .views import car_list, order_list, client_list, success, create_order
+from .views import car_list, order_list, client_list, success, log_in, personal_cabinet
 
 urlpatterns = [
     path("order_list", order_list, name="order_list"),
     path("car_list", car_list, name="car_list"),
     path("client_list", client_list, name="car_list"),
     path("success", success, name="success"),
-    path("create_order", create_order, name="create_order"),
+    path("log_in", log_in, name="log_in"),
+    path("personal_cabinet/<int:pk>", personal_cabinet, name="personal_cabinet"),
+    path("make_order/<int:pk>", make_order, name="make_order"),
 ]

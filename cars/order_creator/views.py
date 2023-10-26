@@ -1,12 +1,7 @@
-from django import forms
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
-from .forms import OrderForm, OrderQuantityForm
+from .forms import UserLogInForm
 from .models import Client, Car, Order
-
-
-class AddToOrderForm(forms.Form):
-    quantity = forms.IntegerField(min_value=1)
 
 
 def client_list(request):
@@ -28,21 +23,21 @@ def success(request):
     return render(request, "result_of_order.html")
 
 
-def create_order(request):
+def log_in(request):
     if request.method == "POST":
-        order_form = OrderForm(request.POST)
-        order_quantity_form = OrderQuantityForm(request.POST)
-        print(order_form.is_valid())
-        if order_form.is_valid() and order_quantity_form.is_valid():
-            order = order_form.save()
-            order_quantity = order_quantity_form.save(commit=False)
-            order_quantity.order = order
-            order_quantity.save()
-            return render(request, "result_of_order.html", {
-                'result': "Order is successful!"})
-    else:
-        order_form = OrderForm()
-        order_quantity_form = OrderQuantityForm()
-    return render(request, "create_order.html",
-                  {"order_form": order_form,
-                   "order_quantity_form": order_quantity_form})
+        user_form = UserLogInForm(request.POST)
+        if user_form.is_valid():
+            client = user_form.cleaned_data['user']
+            return redirect("personal_cabinet/" + str(client.id))
+    user_form = UserLogInForm()
+    return render(request, 'log_in.html', {'form': user_form})
+
+
+def personal_cabinet(request, pk):
+    client = Client.objects.get(pk=pk)
+    # Retrieve the user based on the user_id
+    return render(request, 'personal_cabinet.html', {'client': client})
+
+
+def make_order(request, pk):
+    return

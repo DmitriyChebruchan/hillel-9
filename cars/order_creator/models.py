@@ -10,6 +10,10 @@ class Client(models.Model):
         return self.name
 
 
+class LogedInUser(models.Model):
+    user = models.ForeignKey(Client, on_delete=models.DO_NOTHING)
+
+
 class CarType(models.Model):
     name = models.CharField(max_length=50)
     brand = models.CharField(max_length=50)
@@ -41,7 +45,7 @@ class Car(models.Model):
         self.save()
 
     def __str__(self):
-        return self.color
+        return f'{self.color} {self.car_type} car - Order: {self.blocked_by_order} - Owner: {self.owner}.'
 
 
 class Licence(models.Model):
@@ -65,9 +69,3 @@ class Order(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="orders")
     dealership = models.ForeignKey(Dealership, on_delete=models.CASCADE, related_name="orders")
     is_paid = models.BooleanField(default=False)
-
-
-class OrderQuantity(models.Model):
-    car_type = models.ForeignKey(CarType, on_delete=models.CASCADE, related_name="order_quantities")
-    quantity = models.PositiveIntegerField(default=1)
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="car_types")
