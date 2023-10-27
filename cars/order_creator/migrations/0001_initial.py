@@ -75,11 +75,15 @@ class Migration(migrations.Migration):
                 ("name", models.CharField(max_length=50)),
                 (
                     "available_car_types",
-                    models.ManyToManyField(related_name="dealerships", to="order_creator.cartype"),
+                    models.ManyToManyField(
+                        related_name="dealerships", to="order_creator.cartype"
+                    ),
                 ),
                 (
                     "clients",
-                    models.ManyToManyField(related_name="dealerships", to="order_creator.client"),
+                    models.ManyToManyField(
+                        related_name="dealerships", to="order_creator.client"
+                    ),
                 ),
             ],
         ),
@@ -182,7 +186,10 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="car",
             name="car_type",
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="order_creator.cartype"),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to="order_creator.cartype",
+            ),
         ),
         migrations.AddField(
             model_name="car",

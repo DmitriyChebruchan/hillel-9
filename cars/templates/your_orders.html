@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Orders{% endblock %}
+
+{% block content %}
+    <h2>Your orders, {{ client }}</h2>
+    <p>Paid orders</p>
+    <ul>
+        {% for order in orders %}
+            {% if order.is_paid is True %}
+                <li><a href="/order_details/{{ order.id }}">{{ order }}</a></li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+    <p>Unpaid orders</p>
+    <ul>
+        {% for order in orders %}
+            {% if order.is_paid is False %}
+                <li><a href="/order_details/{{ order.id }}">{{ order }}</a></li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+{% endblock %}
+<p><a href="/personal_cabinet/{{ client.id }}">Back to cabinet</a></p>
+

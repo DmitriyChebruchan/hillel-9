@@ -27,16 +27,25 @@ class Car(models.Model):
     car_type = models.ForeignKey(CarType, on_delete=models.CASCADE)
     color = models.CharField(max_length=50)
     year = models.IntegerField()
-    blocked_by_order = models.ForeignKey("Order", on_delete=models.SET_NULL, null=True, related_name="reserved_cars")
-    owner = models.ForeignKey(Client, on_delete=models.SET_NULL, null=True, related_name="cars")
+    blocked_by_order = models.ForeignKey(
+        "Order",
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="reserved_cars",
+    )
+    owner = models.ForeignKey(
+        Client, on_delete=models.SET_NULL, null=True, related_name="cars"
+    )
     order = models.ForeignKey("Order", null=True, on_delete=models.SET_NULL)
 
     def block(self, order):
         self.blocked_by_order = order
+        self.order = order
         self.save()
 
     def unblock(self):
         self.blocked_by_order = None
+        self.order = None
         self.save()
 
     def sell(self):
@@ -46,11 +55,13 @@ class Car(models.Model):
         self.save()
 
     def __str__(self):
-        return f'{self.color} {self.car_type} car - Order: {self.blocked_by_order} - Owner: {self.owner}.'
+        return f"{self.color} {self.car_type} car - Order: {self.blocked_by_order} - Owner: {self.owner}."
 
 
 class Licence(models.Model):
-    car = models.OneToOneField(Car, on_delete=models.SET_NULL, null=True, related_name="licence")
+    car = models.OneToOneField(
+        Car, on_delete=models.SET_NULL, null=True, related_name="licence"
+    )
     number = models.CharField(max_length=50)
 
     def __str__(self):
@@ -68,5 +79,10 @@ class Dealership(models.Model):
 
 class Order(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="orders")
-    dealership = models.ForeignKey(Dealership, on_delete=models.CASCADE, related_name="orders")
+    dealership = models.ForeignKey(
+        Dealership, on_delete=models.CASCADE, related_name="orders"
+    )
     is_paid = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Order {self.id}"

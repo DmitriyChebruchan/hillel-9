@@ -1,12 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Log in{% endblock %}
+{% block title %}Personal cabinet{% endblock %}
 {% block content %}
-<h1>Hello {{ client.name }}!</h1>
-<p>Thank you for logging in. Here is your menu.</p>
-<ul>
-    <li><a href="/make_order/{{ client.id }}">Make an order</a></li>
-    <li><a href="/pay_orders/{{ client.id }}">Pay your orders</a></li>
-    <li><a href="/list_orders/{{ client.id }}">List your orders</a></li>
-</ul>
-{% endblock%}
+    <h1>Hello {{ client.name }}!</h1>
+    <p>Thank you for logging in. Here is your menu.</p>
+    <ul>
+        <li><a href="/make_order/{{ client.id }}">Make an order</a></li>
+        <li><a href="/your_orders/{{ client.id }}">List your orders</a></li>
+    </ul>
+{% endblock %}

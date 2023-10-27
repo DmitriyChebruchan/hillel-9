@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Created details{% endblock %}
+{% block content %}
+    <p>Dear {{ order.client }}. Below is your order. Check it</p>
+    <p>{{ order }}</p>
+    <p>Dealership: {{ order.dealership }}</p>
+    <p>Is order paid: {{ order.is_paid }}</p>
+    <p>Cars in order:</p>
+    <ul>
+        {% for car in cars %}
+            <li>{{ car }}</li>
+        {% endfor %}
+    </ul>
+    {% if order.is_paid is False %}
+        <p>Do you want to pay?</p>
+        <p><a href="/payment/{{ order.id }}">Pay now!</a></p>
+    {% endif %}
+    <p><a href="/your_orders/{{ order.client.id }}">Back to my orders</a></p>
+{% endblock %}
+
+
+
