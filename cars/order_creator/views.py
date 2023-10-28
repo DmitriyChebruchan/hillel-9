@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 
 from .forms import UserLogInForm, OrderForm, MarkOrderAsPaidForm
 from .models import Client, Car, Order
@@ -6,7 +6,9 @@ from .models import Client, Car, Order
 
 def client_list(request):
     clients = Client.objects.all()
-    return render(request, "list.html", {"elements": clients, "list_name": "Clients"})
+    return render(
+        request, "list.html", {"elements": clients, "list_name": "Clients"}
+    )
 
 
 def car_list(request):
@@ -16,11 +18,13 @@ def car_list(request):
 
 def order_list(request):
     orders = Order.objects.all()
-    return render(request, "list.html", {"elements": orders, "list_name": "Orders"})
+    return render(
+        request, "list.html", {"elements": orders, "list_name": "Orders"}
+    )
 
 
 def success(request):
-    return render(request, "result_of_order.html")
+    return render(request, "cancelled_success.html")
 
 
 def log_in(request):
@@ -49,14 +53,16 @@ def make_order(request, pk):
             order = form.save(commit=False)
             order.client = client
             order.dealership = dealership
+            order.save()  # Save the order first
 
             car_ids = request.POST.getlist("car")
             for car_id in car_ids:
                 car = Car.objects.get(pk=car_id)
-                order.car = car
-                order.save()
                 car.block(order)
-                car.save()
+                if order.is_paid:
+                    car.sell()
+                car.save()  # Save the car after the order
+
             return redirect("/order_details/" + str(order.id))
     else:
         form = OrderForm()
@@ -80,6 +86,9 @@ def payment(request, pk):
         form = MarkOrderAsPaidForm(request.POST, instance=order)
         if form.is_valid():
             form.save()
+            cars = order.reserved_cars.all()
+            for car in cars:
+                car.sell()
             return redirect("/personal_cabinet/" + str(client.id))
     else:
         form = MarkOrderAsPaidForm(instance=order)
@@ -93,4 +102,31 @@ def payment(request, pk):
 def list_of_clients_orders(request, pk):
     client = Client.objects.get(pk=pk)
     orders = Order.objects.filter(client=client)
-    return render(request, "your_orders.html", {"orders": orders, "client": client})
+    return render(
+        request, "your_orders.html", {"orders": orders, "client": client}
+    )
+
+
+def cancel_order(request, pk):
+    order = get_object_or_404(Order, pk=pk)
+    cars = Car.objects.filter(order=order)
+    if request.method == "POST":
+        for car in cars:
+            car.unblock()
+        cancelled_order = order
+        client_id = order.client.id
+        order.delete()
+        return render(
+            request,
+            "cancelled_success.html",
+            {
+                "canceled_order": cancelled_order,
+                "title": "Order is cancelled.",
+                "client_id": client_id,
+            },
+        )
+    return render(
+        request,
+        "cancel_order.html",
+        {"order": order, "cars": cars},
+    )

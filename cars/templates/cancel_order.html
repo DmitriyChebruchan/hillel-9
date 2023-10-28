@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Cancel order{% endblock %}
+{% block content %}
+    <h2>You want to Cancel order</h2>
+    <p>Oder id: {{ order.id }}</p>
+    <p>Order is paid: {{ order.id_paid }}</p>
+    <p>Cars related to order:</p>
+    <ul>
+        {% for car in cars %}
+            <li>{{ car }}</li>
+        {% endfor %}
+    </ul>
+    <form action="" method="post">
+        {% csrf_token %}
+        <button type="submit">Delete</button>
+    </form>
+    <h3><a href="/your_orders/{{ order.client.id }}">Back to orders</a></h3>
+{% endblock %}

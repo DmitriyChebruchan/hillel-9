@@ -49,13 +49,14 @@ class Car(models.Model):
         self.save()
 
     def sell(self):
-        if not self.blocked_by_order:
-            raise Exception("Car is not reserved")
         self.owner = self.blocked_by_order.client
         self.save()
 
     def __str__(self):
-        return f"{self.color} {self.car_type} car - Order: {self.blocked_by_order} - Owner: {self.owner}."
+        return (
+                f"{self.color} {self.car_type} car - "
+                + f"Order:{self.blocked_by_order} - Owner: {self.owner}."
+        )
 
 
 class Licence(models.Model):
@@ -70,7 +71,9 @@ class Licence(models.Model):
 
 class Dealership(models.Model):
     name = models.CharField(max_length=50)
-    available_car_types = models.ManyToManyField(CarType, related_name="dealerships")
+    available_car_types = models.ManyToManyField(
+        CarType, related_name="dealerships"
+    )
     clients = models.ManyToManyField(Client, related_name="dealerships")
 
     def __str__(self):
@@ -78,7 +81,9 @@ class Dealership(models.Model):
 
 
 class Order(models.Model):
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="orders")
+    client = models.ForeignKey(
+        Client, on_delete=models.CASCADE, related_name="orders"
+    )
     dealership = models.ForeignKey(
         Dealership, on_delete=models.CASCADE, related_name="orders"
     )

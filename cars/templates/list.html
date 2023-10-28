@@ -1,19 +1,11 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
-          name="viewport">
-    <meta content="ie=edge" http-equiv="X-UA-Compatible">
-    <title>{{list_name}}</title>
-</head>
-<body>
-<h2><a href="/">Main menu</a></h2>
-<h1>{{list_name}} list</h1>
-<ul>
-    {% for element in elements%}
-    <li>{{element}}</li>
-    {% endfor %}
-</ul>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}{{ list_name }}{% endblock %}
+{% block content %}
+    <h1>{{ list_name }} list</h1>
+    <ul>
+        {% for element in elements %}
+            <li>{{ element }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

@@ -3,23 +3,41 @@
 {% block title %}Orders{% endblock %}
 
 {% block content %}
+    {% if canceled_order %}
+        <p>Order {{ canceled_order }} was cancelled.</p>
+    {% endif %}
+
     <h2>Your orders, {{ client }}</h2>
-    <p>Paid orders</p>
-    <ul>
-        {% for order in orders %}
-            {% if order.is_paid is True %}
-                <li><a href="/order_details/{{ order.id }}">{{ order }}</a></li>
-            {% endif %}
-        {% endfor %}
-    </ul>
-    <p>Unpaid orders</p>
-    <ul>
-        {% for order in orders %}
-            {% if order.is_paid is False %}
-                <li><a href="/order_details/{{ order.id }}">{{ order }}</a></li>
-            {% endif %}
-        {% endfor %}
-    </ul>
+    {% if orders %}
+        <p>Paid orders</p>
+        <ul>
+            {% for order in orders %}
+                {% if order.is_paid is True %}
+                    <li><p>Order {{ order.id }} - <a
+                            href="/order_details/{{ order.id }}">Details</a>/<a
+                            href="/cancel_order/{{ order.id }}">Cancel</a></p>
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+        <p>Unpaid orders</p>
+        <ul>
+            {% for order in orders %}
+                {% if order.is_paid is False %}
+                    <li><p>Order {{ order.id }} - <a href="/order_details
+                    /{{ order.id }}">Details</a>/<a
+                            href="/payment/
+        {{ order.id }}">Pay</a>/<a
+                            href="/cancel_order/{{ order.id }}">Cancel</a></p>
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+        <p><a href="/personal_cabinet/{{ client.id }}">Back to cabinet</a></p>
+    {% else %}
+        <p>No orders are placed yet. Consider <a
+                href="/make_order/{{ client.id }}">make an order</a></p>
+    {% endif %}
+    <a href="/make_order/{{ client.id }}">Make an order</a>
 {% endblock %}
-<p><a href="/personal_cabinet/{{ client.id }}">Back to cabinet</a></p>
 
