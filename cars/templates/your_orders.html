@@ -34,10 +34,9 @@
                 {% endif %}
             {% endfor %}
         </ul>
-        <p><a href="/personal_cabinet/{{ client.id }}">Повернутись до
-            кабінету</a></p>
-    {% else %}
     {% endif %}
+    <p><a href="/personal_cabinet/{{ client.id }}">Повернутись до
+        кабінету</a></p>
     <a href="/make_order/{{ client.id }}">Зробити замовлення</a>
 {% endblock %}
 

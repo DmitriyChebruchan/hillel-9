@@ -32,9 +32,8 @@ def update_cars_status(request, order, car_types, cars):
         quantity = request.POST.get(str(car_type))
         quantity = 0 if quantity is None else int(quantity)
 
-        available_cars_of_the_type = [
-            car for car in cars if car.car_type == car_type
-        ]
+        available_cars_of_the_type = [car for car in cars if
+                                      car.car_type == car_type]
         selected_cars = available_cars_of_the_type[:quantity]
 
         for car in selected_cars:
@@ -44,3 +43,12 @@ def update_cars_status(request, order, car_types, cars):
                 licence = assigning_licence(car)
                 licence.save()
             car.save()
+
+
+def available_cars_generator(car_types, cars):
+    available_car_quantities = []
+    for car_type in car_types:
+        matching_cars = [car for car in cars if car.car_type == car_type]
+        quantity = len(matching_cars)
+        available_car_quantities.append((car_type, quantity))
+    return available_car_quantities

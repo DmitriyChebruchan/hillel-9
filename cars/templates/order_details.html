@@ -12,7 +12,7 @@
         <li><p><a href="/your_orders/{{ order.client.id }}">Повернутись до
             замовлень</a></p></li>
     </ul>
-    <p>{{ order.client }}, вашe замовлення нижче.</p>
+    <p>{{ order.client.id }}, вашe замовлення нижче.</p>
     <p>{{ order }}</p>
     <p>Дилер: {{ order.dealership }}</p>
     <p>Сплачено: {{ order.is_paid }}</p>

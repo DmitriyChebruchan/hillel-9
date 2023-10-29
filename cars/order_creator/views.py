@@ -3,14 +3,17 @@ from django.shortcuts import render, redirect
 
 from .forms import UserLogInForm, OrderForm
 from .models import Client, Car, Order, Licence
-from .supporting_functions import update_cars_status, assigning_licence
+from .supporting_functions import (
+    update_cars_status,
+    assigning_licence,
+    available_cars_generator,
+)
 
 
 def client_list(request):
     clients = Client.objects.all()
-    return render(
-        request, "list.html", {"elements": clients, "list_name": "Clients"}
-    )
+    return render(request, "list.html",
+                  {"elements": clients, "list_name": "Clients"})
 
 
 def car_list(request):
@@ -20,9 +23,8 @@ def car_list(request):
 
 def order_list(request):
     orders = Order.objects.all()
-    return render(
-        request, "list.html", {"elements": orders, "list_name": "Orders"}
-    )
+    return render(request, "list.html",
+                  {"elements": orders, "list_name": "Orders"})
 
 
 def success(request):
@@ -50,36 +52,44 @@ def make_order(request, pk):
     cars = Car.objects.filter(owner=None, blocked_by_order=None)
     dealership = client.dealerships.first()
     car_types = list({car.car_type for car in cars})
+    available_car_quantities = available_cars_generator(car_types, cars)
 
     if request.method == "POST":
         form = OrderForm(request.POST)
         if form.is_valid():
             order = form.save(commit=False)
-            order.client = client
-            order.dealership = dealership
-            order.save()
+            order.client, order.dealership = client, dealership
 
+            total_quantity = sum(
+                int(request.POST.get(str(car_type), 0))
+                for car_type, _ in available_car_quantities
+            )
+
+            if total_quantity == 0:
+                form = OrderForm()
+                return render(
+                    request,
+                    "make_order.html",
+                    {
+                        "form": form,
+                        "client": client,
+                        "car_types": car_types,
+                        "available_car_quantities": available_car_quantities,
+                        "error_msg": True,
+                    },
+                )
+
+            order.save()
             update_cars_status(request, order, car_types, cars)
             return redirect("/order_details/" + str(order.id))
-    else:
-        form = OrderForm()
 
-    available_car_quantities = []
-    for car_type in car_types:
-        matching_cars = [car for car in cars if car.car_type == car_type]
-        quantity = len(matching_cars)
-        available_car_quantities.append((car_type, quantity))
-
-    return render(
-        request,
-        "make_order.html",
-        {
-            "form": form,
-            "client": client,
-            "car_types": car_types,
-            "available_car_quantities": available_car_quantities,
-        },
-    )
+    order_info = {
+        "form": OrderForm(),
+        "client": client,
+        "car_types": car_types,
+        "available_car_quantities": available_car_quantities,
+    }
+    return render(request, "make_order.html", order_info)
 
 
 def order_details(request, pk):
@@ -117,9 +127,8 @@ def payment(request, pk):
 def list_of_clients_orders(request, pk):
     client = Client.objects.get(pk=pk)
     orders = Order.objects.filter(client=client)
-    return render(
-        request, "your_orders.html", {"orders": orders, "client": client}
-    )
+    return render(request, "your_orders.html",
+                  {"orders": orders, "client": client})
 
 
 def cancel_order(request, pk):
@@ -129,9 +138,7 @@ def cancel_order(request, pk):
         for car in cars:
             car.unblock()
             licence = Licence.objects.filter(car=car)
-            print(licence)
-            licence.detete()
-            print(licence)
+            licence.delete()
         cancelled_order = order
         client_id = order.client.id
         order.delete()

@@ -3,6 +3,11 @@
 {% block title %}Зробити замовлення{% endblock %}
 
 {% block content %}
+    {% if error_msg %}
+        <h2 style="color: red">Оберіть хоч одну машину.</h2>
+    {% endif %}
+    <p><a href="/your_orders/{{ client.id }}">Повернутись до
+        замовлень</a></p>
     <h2>Замовлення для клієнта {{ client.name }}</h2>
     <form method="post">
         {% csrf_token %}
@@ -26,4 +31,5 @@
             </form>
         </ul>
     </form>
+
 {% endblock %}
