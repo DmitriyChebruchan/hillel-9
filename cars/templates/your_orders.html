@@ -1,43 +1,43 @@
 {% extends "base.html" %}
 
-{% block title %}Orders{% endblock %}
+{% block title %}Замовлення{% endblock %}
 
 {% block content %}
     {% if canceled_order %}
-        <p>Order {{ canceled_order }} was cancelled.</p>
+        <p>Замовлення {{ canceled_order }} відхилено.</p>
     {% endif %}
 
-    <h2>Your orders, {{ client }}</h2>
+    <h2>Ваші замовлення, {{ client }}</h2>
     {% if orders %}
-        <p>Paid orders</p>
+        <p>Сплачені замовлення:</p>
         <ul>
             {% for order in orders %}
                 {% if order.is_paid is True %}
                     <li><p>Order {{ order.id }} - <a
-                            href="/order_details/{{ order.id }}">Details</a>/<a
-                            href="/cancel_order/{{ order.id }}">Cancel</a></p>
+                            href="/order_details/{{ order.id }}">Деталі</a>/<a
+                            href="/cancel_order/{{ order.id }}">Відмінити</a>
+                    </p>
                     </li>
                 {% endif %}
             {% endfor %}
         </ul>
-        <p>Unpaid orders</p>
+        <p>НеТ cплачені замовлення:</p>
         <ul>
             {% for order in orders %}
                 {% if order.is_paid is False %}
-                    <li><p>Order {{ order.id }} - <a href="/order_details
-                    /{{ order.id }}">Details</a>/<a
-                            href="/payment/
-        {{ order.id }}">Pay</a>/<a
-                            href="/cancel_order/{{ order.id }}">Cancel</a></p>
+                    <li><p>Order {{ order.id }} - <a
+                            href="/order_details/{{ order.id }}">Деталі</a>/<a
+                            href="/payment/{{ order.id }}">Оплатити</a>/<a
+                            href="/cancel_order/
+{{ order.id }}">Відмінити</a></p>
                     </li>
                 {% endif %}
             {% endfor %}
         </ul>
-        <p><a href="/personal_cabinet/{{ client.id }}">Back to cabinet</a></p>
+        <p><a href="/personal_cabinet/{{ client.id }}">Повернутись до
+            кабінету</a></p>
     {% else %}
-        <p>No orders are placed yet. Consider <a
-                href="/make_order/{{ client.id }}">make an order</a></p>
     {% endif %}
-    <a href="/make_order/{{ client.id }}">Make an order</a>
+    <a href="/make_order/{{ client.id }}">Зробити замовлення</a>
 {% endblock %}
 

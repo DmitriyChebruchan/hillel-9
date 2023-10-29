@@ -1,17 +1,29 @@
 {% extends "base.html" %}
 
-{% block title %}Create Order{% endblock %}
+{% block title %}Зробити замовлення{% endblock %}
 
 {% block content %}
-    <h2>Create Order for Client {{ client.name }}</h2>
+    <h2>Замовлення для клієнта {{ client.name }}</h2>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <h3>Select a Car:</h3>
-        {% for car in cars %}
-            <input type="checkbox" id="{{ car.id }}" name="car" value="{{ car.id }}">
-            <label for="{{ car.id }}">{{ car.color }} {{ car.car_type }}</label><br>
-        {% endfor %}
-        <button type="submit">Submit</button>
+        <h3>Введіть необхідну кількість авто:</h3>
+        <ul>
+            <form method="post">
+                {% csrf_token %}
+                {% for car_type, quantity in available_car_quantities %}
+                    <li><p>
+                        <span>{{ car_type }}</span>. {{ quantity }} автівок є
+                        в наявності цього типу.<br>
+                        <input type="number" name="{{ car_type }}" min="0"
+                               max="{{ quantity }}"
+                               placeholder=""
+                               value="0"
+                               required></p>
+                    </li>
+                {% endfor %}<br>
+                <button type="submit">Обрати</button>
+            </form>
+        </ul>
     </form>
 {% endblock %}

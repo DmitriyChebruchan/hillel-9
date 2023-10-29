@@ -1,7 +1,9 @@
-from django.shortcuts import get_object_or_404, render, redirect
+from django.shortcuts import get_object_or_404
+from django.shortcuts import render, redirect
 
-from .forms import UserLogInForm, OrderForm, MarkOrderAsPaidForm
+from .forms import OrderForm, UserLogInForm, MarkOrderAsPaidForm
 from .models import Client, Car, Order
+from .supporting_functions import update_cars_status
 
 
 def client_list(request):
@@ -31,7 +33,7 @@ def log_in(request):
     if request.method == "POST":
         user_form = UserLogInForm(request.POST)
         if user_form.is_valid():
-            client = user_form.cleaned_data["user"]
+            client = user_form.cleaned_data["client"]
             return redirect("personal_cabinet/" + str(client.id))
     user_form = UserLogInForm()
     return render(request, "log_in.html", {"form": user_form})
@@ -45,57 +47,67 @@ def personal_cabinet(request, pk):
 
 def make_order(request, pk):
     client = Client.objects.get(pk=pk)
-    dealership = client.dealerships.first()
     cars = Car.objects.filter(owner=None, blocked_by_order=None)
+    dealership = client.dealerships.first()
+    car_types = list({car.car_type for car in cars})
+
     if request.method == "POST":
         form = OrderForm(request.POST)
         if form.is_valid():
             order = form.save(commit=False)
             order.client = client
             order.dealership = dealership
-            order.save()  # Save the order first
+            order.save()
 
-            car_ids = request.POST.getlist("car")
-            for car_id in car_ids:
-                car = Car.objects.get(pk=car_id)
-                car.block(order)
-                if order.is_paid:
-                    car.sell()
-                car.save()  # Save the car after the order
-
+            update_cars_status(request, order, car_types, cars)
             return redirect("/order_details/" + str(order.id))
     else:
         form = OrderForm()
+
+    available_car_quantities = []
+    for car_type in car_types:
+        matching_cars = [car for car in cars if car.car_type == car_type]
+        quantity = len(matching_cars)
+        available_car_quantities.append((car_type, quantity))
+
     return render(
         request,
         "make_order.html",
-        {"form": form, "client": client, "cars": cars},
+        {
+            "form": form,
+            "client": client,
+            "car_types": car_types,
+            "available_car_quantities": available_car_quantities,
+        },
     )
 
 
 def order_details(request, pk):
     order = Order.objects.get(pk=pk)
     cars = Car.objects.filter(order=order)
+    print("order is", order)
     return render(request, "order_details.html", {"order": order, "cars": cars})
 
 
 def payment(request, pk):
     order = Order.objects.get(pk=pk)
+    cars = Car.objects.filter(order=order)
     client = order.client
     if request.method == "POST":
         form = MarkOrderAsPaidForm(request.POST, instance=order)
         if form.is_valid():
-            form.save()
+            order.is_paid = True
+            order.save()
             cars = order.reserved_cars.all()
             for car in cars:
-                car.sell()
-            return redirect("/personal_cabinet/" + str(client.id))
+                car.sell(order)
+            return redirect(f"/personal_cabinet/{client.id}")
     else:
         form = MarkOrderAsPaidForm(instance=order)
     return render(
         request,
         "mark_order_as_paid.html",
-        {"form": form, "order": order, "client": client},
+        {"form": form, "order": order, "client": client, "cars": cars},
     )
 
 

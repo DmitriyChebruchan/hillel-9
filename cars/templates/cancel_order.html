@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Cancel order{% endblock %}
+{% block title %}Відміна замовлення{% endblock %}
 {% block content %}
-    <h2>You want to Cancel order</h2>
-    <p>Oder id: {{ order.id }}</p>
-    <p>Order is paid: {{ order.id_paid }}</p>
-    <p>Cars related to order:</p>
+    <h2>Ви відміняєте замовлення</h2>
+    <p>Номер замовлення: {{ order.id }}</p>
+    <p>Сплачено: {{ order.id_paid }}</p>
+    <p>Автівки у замовленні:</p>
     <ul>
         {% for car in cars %}
             <li>{{ car }}</li>
@@ -13,7 +13,8 @@
     </ul>
     <form action="" method="post">
         {% csrf_token %}
-        <button type="submit">Delete</button>
+        <button type="submit">Відмінити замовлення</button>
     </form>
-    <h3><a href="/your_orders/{{ order.client.id }}">Back to orders</a></h3>
+    <h3><a href="/your_orders/{{ order.client.id }}">Повернутись до
+        замовлень</a></h3>
 {% endblock %}

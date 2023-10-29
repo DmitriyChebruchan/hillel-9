@@ -10,8 +10,8 @@ class Client(models.Model):
         return self.name
 
 
-class LogedInUser(models.Model):
-    user = models.ForeignKey(Client, on_delete=models.DO_NOTHING)
+class LoggedInUser(models.Model):
+    client = models.ForeignKey(Client, on_delete=models.DO_NOTHING)
 
 
 class CarType(models.Model):
@@ -20,7 +20,7 @@ class CarType(models.Model):
     price = models.PositiveIntegerField()
 
     def __str__(self):
-        return self.name
+        return f"{self.brand} {self.name}"
 
 
 class Car(models.Model):
@@ -46,16 +46,19 @@ class Car(models.Model):
     def unblock(self):
         self.blocked_by_order = None
         self.order = None
+        self.owner = None
         self.save()
 
-    def sell(self):
+    def sell(self, order):
+        self.blocked_by_order = order
+        self.order = order
         self.owner = self.blocked_by_order.client
         self.save()
 
     def __str__(self):
         return (
-                f"{self.color} {self.car_type} car - "
-                + f"Order:{self.blocked_by_order} - Owner: {self.owner}."
+                f"{self.car_type} ({self.color})  - "
+                + f"Замовлення: {self.blocked_by_order} - Власник: {self.owner}."
         )
 
 
@@ -90,4 +93,4 @@ class Order(models.Model):
     is_paid = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"Order {self.id}"
+        return f"Замовлення {self.id}"

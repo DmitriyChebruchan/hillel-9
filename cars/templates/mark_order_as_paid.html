@@ -1,12 +1,22 @@
 {% extends "base.html" %}
 
-{% block title %}Mark Order as Paid{% endblock %}
+{% block title %}Оплатити замовлення{% endblock %}
 {% block content %}
-    <h2>Mark Order as Paid</h2>
+    <h2>Оплатити замовлення</h2>
+    <p>Клієнте, {{ order.client }}. Ось Ваші замовлення.</p>
+    <p>{{ order }}</p>
+    <p>Диллер-центр: {{ order.dealership }}</p>
+    <p>Спачено: {{ order.is_paid }}</p>
+    <p>Авто у замовленні:</p>
+    <ul>
+        {% for car in cars %}
+            <li>{{ car }}</li>
+        {% endfor %}
+    </ul>
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Submit</button>
+        <button type="submit">Сплатити</button>
     </form>
+    <h3><a href="/personal_cabinet/{{ client.id }}">Повернутись до кабінету</a>
+    </h3>
 {% endblock %}
-<h3><a href="personal_cabinet/{{ client.id }}"></a></h3>
