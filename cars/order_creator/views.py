@@ -12,9 +12,8 @@ from .supporting_functions import (
 
 def client_list(request):
     clients = Client.objects.all()
-    return render(
-        request, "list.html", {"elements": clients, "list_name": "Clients"}
-    )
+    return render(request, "list.html",
+                  {"elements": clients, "list_name": "Clients"})
 
 
 def car_list(request):
@@ -24,9 +23,8 @@ def car_list(request):
 
 def order_list(request):
     orders = Order.objects.all()
-    return render(
-        request, "list.html", {"elements": orders, "list_name": "Orders"}
-    )
+    return render(request, "list.html",
+                  {"elements": orders, "list_name": "Orders"})
 
 
 def success(request):
@@ -129,9 +127,8 @@ def payment(request, pk):
 def list_of_clients_orders(request, pk):
     client = Client.objects.get(pk=pk)
     orders = Order.objects.filter(client=client)
-    return render(
-        request, "your_orders.html", {"orders": orders, "client": client}
-    )
+    return render(request, "your_orders.html",
+                  {"orders": orders, "client": client})
 
 
 def cancel_order(request, pk):
