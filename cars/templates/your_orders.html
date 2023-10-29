@@ -21,7 +21,7 @@
                 {% endif %}
             {% endfor %}
         </ul>
-        <p>НеТ cплачені замовлення:</p>
+        <p>Не cплачені замовлення:</p>
         <ul>
             {% for order in orders %}
                 {% if order.is_paid is False %}

@@ -47,6 +47,7 @@ class Car(models.Model):
         self.blocked_by_order = None
         self.order = None
         self.owner = None
+        self.licence.delete()
         self.save()
 
     def sell(self, order):
@@ -56,10 +57,20 @@ class Car(models.Model):
         self.save()
 
     def __str__(self):
-        return (
-                f"{self.car_type} ({self.color})  - "
-                + f"Замовлення: {self.blocked_by_order} - Власник: {self.owner}."
-        )
+        try:
+            licence_str = f"Номер: {self.licence}"
+        except AttributeError:
+            licence_str = ""
+
+        owner = f"Власник: {self.owner}" if self.owner else ""
+        order = f"{self.blocked_by_order}" if self.blocked_by_order else ""
+
+        arguments = [
+            str(arg)
+            for arg in [self.car_type, self.color, order, owner, licence_str]
+            if arg
+        ]
+        return " - ".join(arguments)
 
 
 class Licence(models.Model):
@@ -93,4 +104,4 @@ class Order(models.Model):
     is_paid = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"Замовлення {self.id}"
+        return f"Замовлення: {self.id}"

@@ -15,10 +15,3 @@ class OrderForm(forms.ModelForm):
         model = Order
         fields = ["is_paid"]
         labels = {"is_paid": "Сплачено"}
-
-
-class MarkOrderAsPaidForm(forms.ModelForm):
-    class Meta:
-        model = Order
-        fields = ["is_paid"]
-        labels = {"is_paid": "Сплатити"}

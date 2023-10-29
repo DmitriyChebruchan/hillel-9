@@ -3,9 +3,9 @@
 {% block title %}{{ list_name }}{% endblock %}
 {% block content %}
     <h1>Список {{ list_name }}</h1>
-    <ul>
+    <ol>
         {% for element in elements %}
             <li>{{ element }}</li>
         {% endfor %}
-    </ul>
+    </ol>
 {% endblock %}

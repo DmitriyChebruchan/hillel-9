@@ -1,9 +1,9 @@
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render, redirect
 
-from .forms import OrderForm, UserLogInForm, MarkOrderAsPaidForm
-from .models import Client, Car, Order
-from .supporting_functions import update_cars_status
+from .forms import UserLogInForm, OrderForm
+from .models import Client, Car, Order, Licence
+from .supporting_functions import update_cars_status, assigning_licence
 
 
 def client_list(request):
@@ -94,16 +94,19 @@ def payment(request, pk):
     cars = Car.objects.filter(order=order)
     client = order.client
     if request.method == "POST":
-        form = MarkOrderAsPaidForm(request.POST, instance=order)
+        form = OrderForm(request.POST, instance=order)
         if form.is_valid():
             order.is_paid = True
             order.save()
             cars = order.reserved_cars.all()
             for car in cars:
                 car.sell(order)
+                licence = assigning_licence(car)
+                print(licence)
+                licence.save()
             return redirect(f"/personal_cabinet/{client.id}")
     else:
-        form = MarkOrderAsPaidForm(instance=order)
+        form = OrderForm(instance=order)
     return render(
         request,
         "mark_order_as_paid.html",
@@ -125,6 +128,10 @@ def cancel_order(request, pk):
     if request.method == "POST":
         for car in cars:
             car.unblock()
+            licence = Licence.objects.filter(car=car)
+            print(licence)
+            licence.detete()
+            print(licence)
         cancelled_order = order
         client_id = order.client.id
         order.delete()
