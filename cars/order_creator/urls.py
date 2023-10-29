@@ -36,9 +36,8 @@ urlpatterns = [
     path("client_list", client_list, name="car_list"),
     path("success", success, name="success"),
     path("log_in", log_in, name="log_in"),
-    path(
-        "personal_cabinet/<int:pk>", personal_cabinet, name="personal_cabinet"
-    ),
+    path("personal_cabinet/<int:pk>", personal_cabinet,
+         name="personal_cabinet"),
     path("make_order/<int:pk>", make_order, name="make_order"),
     path("order_details/<int:pk>", order_details, name="order_details"),
     path("payment/<int:pk>", payment, name="payment"),
