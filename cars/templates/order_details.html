@@ -3,7 +3,16 @@
 {% block title %}Created details{% endblock %}
 
 {% block content %}
-    <p>{{ order.client }}, ваші замовлення нижче.</p>
+    <p>Важливі посилання</p>
+    <ul>
+        {% if order.is_paid is False %}
+            <li><p><a href="/payment/{{ order.id }}">Оплатити зараз!</a></p>
+            </li>
+        {% endif %}
+        <li><p><a href="/your_orders/{{ order.client.id }}">Повернутись до
+            замовлень</a></p></li>
+    </ul>
+    <p>{{ order.client }}, вашe замовлення нижче.</p>
     <p>{{ order }}</p>
     <p>Дилер: {{ order.dealership }}</p>
     <p>Сплачено: {{ order.is_paid }}</p>
@@ -13,11 +22,6 @@
             <li>{{ car }}</li>
         {% endfor %}
     </ul>
-    {% if order.is_paid is False %}
-        <p><a href="/payment/{{ order.id }}">Оплатити зараз!</a></p>
-    {% endif %}
-    <p><a href="/your_orders/{{ order.client.id }}">Повернутись до
-        замовлень</a></p>
 {% endblock %}
 
 
